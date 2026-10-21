@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  dar-wasalt-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dar_wasalt_ai_app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-meta-llama/llama-3.3-70b-instruct:free}
+    restart: unless-stopped

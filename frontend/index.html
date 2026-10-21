@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dar Global & Wasalt AI Assistant | Real Estate Intelligence</title>
+  <meta name="description" content="AI Chatbot grounded in verified public data from Dar Global luxury international residences and Wasalt Saudi PropTech marketplace." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- Markdown parser library -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="logo-mark">
+          <span class="logo-icon">🏛️</span>
+        </div>
+        <div class="branding-text">
+          <div class="brand-title">
+            <span class="gold-gradient">Dar Global</span>
+            <span class="divider-dot">•</span>
+            <span class="teal-gradient">Wasalt</span>
+            <span class="ai-badge">AI 2.0</span>
+          </div>
+          <p class="brand-subtitle">Grounded Intelligence for Global Luxury & Saudi Real Estate</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Source Scope Filter -->
+        <div class="scope-selector" id="scopeSelector">
+          <button class="scope-btn active" data-scope="all">All Ecosystem</button>
+          <button class="scope-btn" data-scope="Dar Global">Dar Global</button>
+          <button class="scope-btn" data-scope="Wasalt">Wasalt</button>
+        </div>
+
+        <!-- OpenRouter Settings Trigger -->
+        <button class="icon-btn" id="openSettingsBtn" title="Model & API Key Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="chat-viewport">
+      <!-- Welcome Hero Banner -->
+      <div class="welcome-hero" id="welcomeHero">
+        <div class="hero-badge">Verified Grounded Assistant</div>
+        <h1 class="hero-headline">
+          Discover Luxury Branded Residences & Verified Saudi PropTech
+        </h1>
+        <p class="hero-subline">
+          Inquire about Dar Global's $23B portfolio across 7 nations (Trump Simaisma, AIDA Oman, Pagani Tower)
+          or Wasalt's Saudi marketplace, e-auctions, and REGA Fal-licensed offerings.
+        </p>
+
+        <!-- Stats Bar -->
+        <div class="stats-pills" id="statsPills">
+          <div class="stat-item">
+            <span class="stat-number">16+</span>
+            <span class="stat-label">Verified Docs</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">$23B</span>
+            <span class="stat-label">Dar Global GDV</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Fal Compliant</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">Free</span>
+            <span class="stat-label">OpenRouter Tier</span>
+          </div>
+        </div>
+
+        <!-- Prompt Suggestions -->
+        <div class="suggestions-grid">
+          <button class="suggestion-card" data-prompt="Tell me about Dar Global's Trump Villas in Simaisma, Qatar.">
+            <span class="sugg-icon">🏆</span>
+            <div class="sugg-content">
+              <strong>Trump Villas Qatar</strong>
+              <span>Simaisma championship golf & luxury sales</span>
+            </div>
+          </button>
+          <button class="suggestion-card" data-prompt="How do real estate auctions work on Wasalt, and how is the E-Wallet used?">
+            <span class="sugg-icon">🔨</span>
+            <div class="sugg-content">
+              <strong>Wasalt E-Auctions</strong>
+              <span>Judicial & commercial bidding guidelines</span>
+            </div>
+          </button>
+          <button class="suggestion-card" data-prompt="What luxury villas are offered at AIDA Muscat in Oman with Fendi Casa?">
+            <span class="sugg-icon">🌊</span>
+            <div class="sugg-content">
+              <strong>AIDA Oman & FENDI Casa</strong>
+              <span>Clifftop Azure Oceanfront mansions</span>
+            </div>
+          </button>
+          <button class="suggestion-card" data-prompt="Compare Dar Global's international luxury focus with Wasalt's Saudi PropTech marketplace.">
+            <span class="sugg-icon">⚖️</span>
+            <div class="sugg-content">
+              <strong>Dar Global vs Wasalt</strong>
+              <span>Strategic synergy and market focus</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Thread -->
+      <div class="messages-container" id="messagesContainer"></div>
+    </main>
+
+    <!-- Bottom Input Dock -->
+    <footer class="input-dock">
+      <div class="dock-inner">
+        <div class="input-wrapper">
+          <textarea
+            id="queryInput"
+            class="chat-input"
+            rows="1"
+            placeholder="Ask about Dar Global luxury developments, Wasalt auctions, Saudi properties..."
+          ></textarea>
+          <button id="sendBtn" class="send-btn" title="Send Query">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div class="dock-footer">
+          <span class="model-indicator" id="activeModelBadge">
+            <span class="pulse-dot"></span>
+            <span id="modelNameDisplay">meta-llama/llama-3.3-70b-instruct:free</span>
+          </span>
+          <span class="dock-disclaimer">Grounded in public darglobal.co.uk & wasalt.sa data.</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>OpenRouter & AI Configuration</h3>
+          <p>Select a free OpenRouter model and configure an optional API key.</p>
+        </div>
+        <button class="close-btn" id="closeSettingsBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="openrouterApiKey">OpenRouter API Key (Optional)</label>
+          <input
+            type="password"
+            id="openrouterApiKey"
+            placeholder="sk-or-v1-..."
+            autocomplete="off"
+          />
+          <small class="helper-text">
+            Leave blank to use the server default or test the built-in grounded real estate synthesizer. Get a free key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai</a>.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="modelSelect">Free Model Selection</label>
+          <select id="modelSelect">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">meta-llama/llama-3.3-70b-instruct:free (Recommended - 70B)</option>
+            <option value="google/gemini-2.0-flash-exp:free">google/gemini-2.0-flash-exp:free (Fast Multimodal)</option>
+            <option value="meta-llama/llama-3.1-8b-instruct:free">meta-llama/llama-3.1-8b-instruct:free (Ultra Fast)</option>
+            <option value="qwen/qwen-2.5-coder-32b-instruct:free">qwen/qwen-2.5-coder-32b-instruct:free</option>
+            <option value="mistralai/mistral-7b-instruct:free">mistralai/mistral-7b-instruct:free</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="streamToggle" checked />
+            <span>Enable Real-time Response Streaming</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelSettingsBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveSettingsBtn">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
