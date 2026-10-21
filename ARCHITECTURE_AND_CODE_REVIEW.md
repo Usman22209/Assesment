@@ -1,10 +1,8 @@
 ﻿# Assessment: Dar Global & Wasalt AI Chatbot - Code Review & Architecture Document
 
-> **Candidate / Developer:** Usman Shafiq  
+> **Candidate / Developer:** Talha Sadiq  
 > **Position / Role:** AI / Full-Stack Engineer  
 > **Live Public Application:** [https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)  
-> **Repository:** [https://github.com/Usman22209/Assesment](https://github.com/Usman22209/Assesment)  
-
 ---
 
 ## 📋 Table of Contents
@@ -72,3 +70,4 @@ Data collection (`scripts/collect_data.py`) strictly adheres to web scraping eth
 2. **Streaming Safety:** Server-Sent Events (SSE) connections are wrapped with disconnect monitors to prevent socket leaks during client drops.
 3. **Secret Hygiene:** Zero hardcoded API keys. Environment credentials are loaded strictly via `.env` with complete `.env.example` templates provided.
 4. **Automated Test Coverage:** Includes unit tests for retrieval accuracy (`tests/test_rag.py`) and integration tests for API endpoints (`tests/test_api.py`).
+
