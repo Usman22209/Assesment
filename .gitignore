@@ -17,4 +17,5 @@ Thumbs.db
 
 # Logs & temp
 *.log
+*.exe
 scratch/

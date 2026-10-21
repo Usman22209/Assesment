@@ -1,5 +1,8 @@
 # 🏛️ Dar Global & Wasalt AI Assistant
 
+> **🌐 Live Public Demo URL**: [https://answered-lewis-calibration-experiments.trycloudflare.com](https://answered-lewis-calibration-experiments.trycloudflare.com)
+> *(Grounded AI Chatbot running live with Docker & OpenRouter free models)*
+
 An enterprise-grade, retrieval-augmented generation (RAG) AI chatbot grounded in verified, publicly available information from **[Dar Global](https://darglobal.co.uk/)** (London-listed luxury real estate developer: LSE: DAR) and **[Wasalt](https://wasalt.sa/en)** (Saudi Arabia's premier PropTech marketplace and e-auction platform).
 
 Powered by free open-weights models through **OpenRouter** (`meta-llama/llama-3.3-70b-instruct:free`, `google/gemini-2.0-flash-exp:free`) and containerized with Docker for seamless one-command deployment.

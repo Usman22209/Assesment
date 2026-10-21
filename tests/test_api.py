@@ -5,6 +5,8 @@ import sys
 import os
 
 sys.path.insert(0, os.path.abspath("."))
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from fastapi.testclient import TestClient
 from backend.app import app
