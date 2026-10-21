@@ -29,9 +29,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let isGenerating = false;
 
   // Local Storage Settings
-  let userApiKey = localStorage.getItem("openrouter_api_key") || "";
-  let selectedModel = localStorage.getItem("selected_model") || "meta-llama/llama-3.3-70b-instruct:free";
+  let userApiKey = (localStorage.getItem("openrouter_api_key") || "").replace(/^Bearer\s+/i, "").trim();
+  let selectedModel = localStorage.getItem("selected_model") || "minimax/minimax-m3.1-flash:free";
   let enableStreaming = localStorage.getItem("enable_streaming") !== "false";
+
+  // Migrate obsolete models if previously cached in user browser
+  const obsoleteModels = [
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemini-2.0-flash-exp:free",
+    "meta-llama/llama-3.1-8b-instruct:free",
+    "qwen/qwen-2.5-coder-32b-instruct:free",
+    "mistralai/mistral-7b-instruct:free",
+  ];
+  if (obsoleteModels.includes(selectedModel)) {
+    selectedModel = "minimax/minimax-m3.1-flash:free";
+    localStorage.setItem("selected_model", selectedModel);
+  }
 
   // Initial Sync
   openrouterApiKeyInput.value = userApiKey;
@@ -119,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   saveSettingsBtn.addEventListener("click", () => {
-    userApiKey = openrouterApiKeyInput.value.trim();
+    userApiKey = openrouterApiKeyInput.value.replace(/^Bearer\s+/i, "").trim();
     selectedModel = modelSelect.value;
     enableStreaming = streamToggle.checked;
 

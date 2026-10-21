@@ -12,5 +12,5 @@ services:
       - PORT=8000
       - HOST=0.0.0.0
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
-      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-meta-llama/llama-3.3-70b-instruct:free}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-minimax/minimax-m3.1-flash:free}
     restart: unless-stopped

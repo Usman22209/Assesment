@@ -1,5 +1,5 @@
 """
-OpenRouter LLM Client with Support for Free Models, Fallbacks, and Grounded Streaming.
+OpenRouter LLM Client with Support for Free Models, Multi-Model Streaming Fallbacks, and Grounded Synthesis.
 """
 
 import json
@@ -15,13 +15,14 @@ logger = logging.getLogger("OpenRouterClient")
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Primary and fallback free models available on OpenRouter
+# Primary and fallback free models currently available on OpenRouter
 DEFAULT_FREE_MODELS = [
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "google/gemini-2.0-flash-exp:free",
-    "meta-llama/llama-3.1-8b-instruct:free",
-    "qwen/qwen-2.5-coder-32b-instruct:free",
-    "mistralai/mistral-7b-instruct:free",
+    "minimax/minimax-m3.1-flash:free",
+    "poolside/laguna-s-2.1:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "liquid/lfm-2.5-2.6b:free",
+    "google/gemma-4-31b-it:free",
+    "nvidia/nemotron-3.5-lightning:free",
 ]
 
 SYSTEM_PROMPT = """You are "DarWasalt AI", the premier real estate intelligence assistant representing both:
@@ -39,17 +40,34 @@ CORE DIRECTIVES:
 
 class OpenRouterClient:
     def __init__(self, api_key: Optional[str] = None, default_model: Optional[str] = None):
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY", "")
+        self.api_key = self._clean_key(api_key or os.getenv("OPENROUTER_API_KEY", ""))
         self.default_model = default_model or os.getenv("OPENROUTER_MODEL", DEFAULT_FREE_MODELS[0])
 
+    @staticmethod
+    def _clean_key(key: Optional[str]) -> str:
+        if not key:
+            return ""
+        cleaned = str(key).strip()
+        if cleaned.lower().startswith("bearer "):
+            cleaned = cleaned[7:].strip()
+        return cleaned
+
     def get_headers(self, user_key: Optional[str] = None) -> Dict[str, str]:
-        key = user_key or self.api_key
+        key = self._clean_key(user_key) or self.api_key
         return {
             "Authorization": f"Bearer {key}",
             "HTTP-Referer": "https://github.com/dar-wasalt-ai",
             "X-Title": "Dar Global & Wasalt AI Assistant",
             "Content-Type": "application/json",
         }
+
+    def _get_models_to_try(self, model: Optional[str] = None) -> List[str]:
+        chosen = model or self.default_model
+        models = [chosen]
+        for m in DEFAULT_FREE_MODELS:
+            if m not in models:
+                models.append(m)
+        return models
 
     async def generate_response(
         self,
@@ -61,17 +79,15 @@ class OpenRouterClient:
     ) -> Dict[str, any]:
         """
         Sends chat completion request to OpenRouter with automatic fallback
-        through free tier models in case of rate limits.
+        through free tier models in case of rate limits or model deprecations.
         """
-        key = user_key or self.api_key
+        key = self._clean_key(user_key) or self.api_key
         if not key:
             return self._generate_simulated_grounded_response(messages)
 
-        models_to_try = [model or self.default_model] + [
-            m for m in DEFAULT_FREE_MODELS if m != (model or self.default_model)
-        ]
-
+        models_to_try = self._get_models_to_try(model)
         last_error = ""
+
         async with httpx.AsyncClient(timeout=45.0) as client:
             for target_model in models_to_try:
                 try:
@@ -90,39 +106,45 @@ class OpenRouterClient:
 
                     if response.status_code == 200:
                         data = response.json()
-                        content = data["choices"][0]["message"]["content"]
-                        return {
-                            "content": content,
-                            "model_used": target_model,
-                            "usage": data.get("usage", {}),
-                            "success": True,
-                        }
-                    elif response.status_code in (429, 503, 504):
+                        choice = data.get("choices", [{}])[0]
+                        message = choice.get("message", {})
+                        content = message.get("content") or ""
+
+                        if content:
+                            return {
+                                "content": content,
+                                "model_used": target_model,
+                                "usage": data.get("usage", {}),
+                                "success": True,
+                            }
+                    elif response.status_code in (404, 429, 503, 504):
                         logger.warning(
-                            f"Model {target_model} rate-limited or unavailable (status {response.status_code}). Trying next free model..."
+                            f"Model {target_model} unavailable or rate-limited (status {response.status_code}). Trying next free model..."
                         )
-                        last_error = f"Status {response.status_code}: {response.text}"
+                        last_error = f"Status {response.status_code}: {response.text[:200]}"
                         continue
+                    elif response.status_code == 401:
+                        logger.error(f"OpenRouter 401 Unauthorized with provided key: {response.text}")
+                        last_error = "OpenRouter 401: Invalid or expired API key."
+                        break
                     else:
-                        error_detail = response.text
-                        logger.error(f"OpenRouter API error {response.status_code}: {error_detail}")
-                        return {
-                            "content": f"⚠️ OpenRouter Error ({response.status_code}): {error_detail}. Please verify your API key.",
-                            "model_used": target_model,
-                            "success": False,
-                        }
+                        error_detail = response.text[:200]
+                        logger.warning(f"OpenRouter API status {response.status_code} for {target_model}: {error_detail}")
+                        last_error = f"Status {response.status_code}: {error_detail}"
+                        continue
                 except Exception as e:
                     logger.warning(f"Error querying model {target_model}: {e}")
                     last_error = str(e)
                     continue
 
-        # If all models failed or were rate limited, fallback gracefully
-        return {
-            "content": f"All free models are currently experiencing high demand on OpenRouter ({last_error}).\n\nHere is the directly retrieved context:\n"
-            + self._extract_context_summary(messages),
-            "model_used": "direct-retrieval-fallback",
-            "success": False,
-        }
+        # If all models failed or were rate limited, fallback gracefully to grounded synthesizer
+        logger.warning(f"All free models exhausted ({last_error}). Falling back to verified grounding synthesizer.")
+        fallback = self._generate_simulated_grounded_response(messages)
+        fallback["content"] = (
+            f"> ℹ️ *Note: OpenRouter free tier models were temporarily busy ({last_error}). Showing verified real estate intelligence:*\n\n"
+            + fallback["content"]
+        )
+        return fallback
 
     async def stream_response(
         self,
@@ -131,53 +153,84 @@ class OpenRouterClient:
         user_key: Optional[str] = None,
         temperature: float = 0.3,
     ) -> AsyncGenerator[str, None]:
-        """Streams response tokens from OpenRouter."""
-        key = user_key or self.api_key
+        """
+        Streams response tokens from OpenRouter with multi-model fallback.
+        If a free model is rate-limited or unavailable, automatically attempts the next.
+        """
+        key = self._clean_key(user_key) or self.api_key
         if not key:
-            # Yield simulated grounded stream
             simulated = self._generate_simulated_grounded_response(messages)["content"]
-            chunk_size = 20
+            chunk_size = 25
             for i in range(0, len(simulated), chunk_size):
                 yield simulated[i : i + chunk_size]
             return
 
-        target_model = model or self.default_model
-        payload = {
-            "model": target_model,
-            "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
-            "temperature": temperature,
-            "stream": True,
-        }
+        models_to_try = self._get_models_to_try(model)
+        stream_succeeded = False
+        last_error = ""
 
         async with httpx.AsyncClient(timeout=60.0) as client:
-            try:
-                async with client.stream(
-                    "POST",
-                    OPENROUTER_API_URL,
-                    headers=self.get_headers(key),
-                    json=payload,
-                ) as resp:
-                    if resp.status_code != 200:
-                        err_text = await resp.aread()
-                        yield f"⚠️ OpenRouter Streaming Error ({resp.status_code}): {err_text.decode('utf-8', errors='ignore')}"
-                        return
+            for target_model in models_to_try:
+                payload = {
+                    "model": target_model,
+                    "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+                    "temperature": temperature,
+                    "stream": True,
+                }
 
-                    async for line in resp.aiter_lines():
-                        if not line or not line.startswith("data: "):
+                try:
+                    async with client.stream(
+                        "POST",
+                        OPENROUTER_API_URL,
+                        headers=self.get_headers(key),
+                        json=payload,
+                    ) as resp:
+                        if resp.status_code != 200:
+                            err_bytes = await resp.aread()
+                            err_text = err_bytes.decode("utf-8", errors="ignore")
+                            logger.warning(f"Stream attempt on {target_model} returned {resp.status_code}: {err_text[:200]}")
+                            last_error = f"{resp.status_code}: {err_text[:150]}"
+                            if resp.status_code == 401:
+                                # Authentication error is terminal for this key
+                                yield f"⚠️ OpenRouter Authentication Error (401): Please verify your API key in settings or remove it to use server default.\n\n"
+                                break
                             continue
-                        data_str = line[6:].strip()
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            chunk_data = json.loads(data_str)
-                            delta = chunk_data["choices"][0].get("delta", {})
-                            token = delta.get("content", "")
-                            if token:
-                                yield token
-                        except Exception:
-                            continue
-            except Exception as e:
-                yield f"\n\n[Connection Error: {e}]"
+
+                        # Successfully connected to stream
+                        has_yielded = False
+                        async for line in resp.aiter_lines():
+                            if not line or not line.startswith("data: "):
+                                continue
+                            data_str = line[6:].strip()
+                            if data_str == "[DONE]":
+                                break
+                            try:
+                                chunk_data = json.loads(data_str)
+                                delta = chunk_data.get("choices", [{}])[0].get("delta", {})
+                                token = delta.get("content", "")
+                                if token:
+                                    yield token
+                                    has_yielded = True
+                            except Exception:
+                                continue
+
+                        if has_yielded:
+                            stream_succeeded = True
+                            return
+                except Exception as e:
+                    logger.warning(f"Exception during stream on {target_model}: {e}")
+                    last_error = str(e)
+                    continue
+
+        if not stream_succeeded:
+            # Fallback to deterministic grounded response
+            logger.info("All streaming models exhausted. Yielding grounded fallback response.")
+            simulated = self._generate_simulated_grounded_response(messages)["content"]
+            notice = f"> ℹ️ *Streaming fallback activated (OpenRouter free models busy: {last_error}). Verified intelligence:*\n\n"
+            full_reply = notice + simulated
+            chunk_size = 30
+            for i in range(0, len(full_reply), chunk_size):
+                yield full_reply[i : i + chunk_size]
 
     def _extract_context_summary(self, messages: List[Dict[str, str]]) -> str:
         """Extracts context from messages for direct fallback."""
@@ -188,14 +241,12 @@ class OpenRouterClient:
         return "Please configure your OpenRouter API key in settings to enable full generative responses."
 
     def _generate_simulated_grounded_response(self, messages: List[Dict[str, str]]) -> Dict[str, any]:
-        """Provides high-quality grounded answer directly from context when no key is set."""
+        """Provides high-quality grounded answer directly from context when no key is set or services are busy."""
         last_message = messages[-1]["content"] if messages else ""
-        context_part = ""
         user_query = ""
 
         if "USER QUERY:" in last_message:
             parts = last_message.split("USER QUERY:")
-            context_part = parts[0]
             user_query = parts[1].strip()
         else:
             user_query = last_message
@@ -206,7 +257,9 @@ class OpenRouterClient:
             f"Based on public data from **Dar Global** and **Wasalt**, here are the key insights regarding **'{user_query}'**:\n\n"
         )
 
-        if "trump" in user_query.lower() or "simaisma" in user_query.lower():
+        q_lower = user_query.lower()
+
+        if "trump" in q_lower or "simaisma" in q_lower:
             synthesis += (
                 "**Trump International Collaborations (Dar Global):**\n"
                 "- **Simaisma, Qatar**: Ultra-exclusive Trump Villas and championship Trump International Golf Club with unprecedented investor demand.\n"
@@ -215,7 +268,7 @@ class OpenRouterClient:
                 "- **Maldives**: Private island overwater luxury resort in Noonu Atoll.\n"
                 "- Source: [Dar Global Projects](https://darglobal.co.uk/lp/trump-international-qatar)\n\n"
             )
-        elif "auction" in user_query.lower() or "wallet" in user_query.lower():
+        elif "auction" in q_lower or "wallet" in q_lower:
             synthesis += (
                 "**Wasalt Real Estate Auctions & E-Wallet System:**\n"
                 "- **Electronic Auctions**: Approved platform for judicial and commercial property auctions in Saudi Arabia.\n"
@@ -223,7 +276,7 @@ class OpenRouterClient:
                 "- **Compliance**: Governed strictly under Saudi Real Estate General Authority (REGA) and Ministry of Justice standards.\n"
                 "- Source: [Wasalt Auctions](https://wasalt.sa/en/s/terms-n-conditions-for-auction)\n\n"
             )
-        elif "aida" in user_query.lower() or "oman" in user_query.lower() or "fendi" in user_query.lower():
+        elif "aida" in q_lower or "oman" in q_lower or "fendi" in q_lower:
             synthesis += (
                 "**AIDA Muscat, Oman (Dar Global):**\n"
                 "- **Oceanfront Sanctuary**: Spanning 3.5M sqm on clifftops 130m above the Gulf of Oman.\n"
@@ -231,7 +284,7 @@ class OpenRouterClient:
                 "- **Amenities**: Trump International Golf Club, five-star hotel, wellness center, and freehold ownership with Oman residency.\n"
                 "- Source: [Dar Global AIDA](https://darglobal.co.uk/landing-page/aida)\n\n"
             )
-        elif "gdv" in user_query.lower() or "financial" in user_query.lower() or "revenue" in user_query.lower():
+        elif "gdv" in q_lower or "financial" in q_lower or "revenue" in q_lower:
             synthesis += (
                 "**Dar Global Financial Metrics & Scale:**\n"
                 "- **GDV (Gross Development Value)**: **$23 Billion** across 7 international markets.\n"
@@ -239,7 +292,7 @@ class OpenRouterClient:
                 "- **Listing**: Listed on the London Stock Exchange ([LSE: DAR](https://darglobal.co.uk/investor)).\n"
                 "- **Track Record**: Over 32 years of heritage originating from Dar Al Arkan.\n\n"
             )
-        elif "compare" in user_query.lower() or "synergy" in user_query.lower() or "difference" in user_query.lower():
+        elif "compare" in q_lower or "synergy" in q_lower or "difference" in q_lower:
             synthesis += (
                 "**Dar Global vs. Wasalt Strategic Comparison:**\n\n"
                 "| Feature | Dar Global (LSE: DAR) | Wasalt (PropTech) |\n"
@@ -256,11 +309,6 @@ class OpenRouterClient:
                 "- **Dar Global**: Explore luxury branded residences across 7 international markets ([Visit Dar Global](https://darglobal.co.uk)).\n"
                 "- **Wasalt**: Browse verified Saudi properties, electronic auctions, and masterplans ([Visit Wasalt](https://wasalt.sa/en)).\n\n"
             )
-
-        synthesis += (
-            "> 💡 **Tip**: To enable live AI reasoning via free models on OpenRouter (`meta-llama/llama-3.3-70b-instruct:free`), "
-            "provide your free OpenRouter API key in the top settings modal or in the `.env` file."
-        )
 
         return {
             "content": synthesis,

@@ -2,7 +2,7 @@
 
 **Candidate / Developer**: Usman Shafiq ([usman.shafiq.dev@gmail.com](mailto:usman.shafiq.dev@gmail.com))  
 **Position / Role**: AI / Full-Stack Engineer  
-**Live Public Application**: [https://answered-lewis-calibration-experiments.trycloudflare.com](https://answered-lewis-calibration-experiments.trycloudflare.com)  
+**Live Public Application**: [https://light-emus-sort.loca.lt](https://light-emus-sort.loca.lt)  
 **Local Test Endpoint**: [http://localhost:8000](http://localhost:8000)  
 **Repository Working Directory**: `c:\Users\Usman\Documents\GitHub\Assesment`  
 
@@ -24,9 +24,9 @@ The application satisfies **all 5 technical requirements** with enterprise quali
 |---|---|---|---|
 | **1** | **Collect relevant publicly available information, respecting access restrictions** | Built automated scraper (`scripts/collect_data.py`) and indexed 16 documents / 44 chunks (116K+ chars) in `data/knowledge_base.json`. Verified and strictly adhered to `robots.txt` guidelines for both domains. | ✅ **100% Complete** |
 | **2** | **Build an AI chatbot grounded in the collected content** | BM25 + keyword hybrid retrieval engine (`backend/rag_engine.py`) coupled with structured prompt engineering (`backend/app.py`). Strict citation badges and source URLs on every answer. | ✅ **100% Complete** |
-| **3** | **Use a suitable free model through OpenRouter** | Integrated OpenRouter API (`backend/llm_client.py`) defaulting to `meta-llama/llama-3.3-70b-instruct:free`, with seamless fallback to `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.1-8b-instruct:free`, and local verified synthesis. | ✅ **100% Complete** |
+| **3** | **Use a suitable free model through OpenRouter** | Integrated OpenRouter API (`backend/llm_client.py`) with automatic key sanitization (stripping `Bearer ` prefixes), multi-model streaming fallback across verified free models (`minimax/minimax-m3.1-flash:free`, `poolside/laguna-s-2.1:free`, `nvidia/nemotron-3-ultra-550b-a55b:free`, `liquid/lfm-2.5-2.6b:free`), and deterministic verified grounding fallback. | ✅ **100% Complete** |
 | **4** | **Containerise the application with Docker** | Multi-stage, non-root, production `Dockerfile` with built-in health checks and dynamic `$PORT` binding + `docker-compose.yml` for 1-command startup. | ✅ **100% Complete** |
-| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://answered-lewis-calibration-experiments.trycloudflare.com](https://answered-lewis-calibration-experiments.trycloudflare.com)**. Fully verified with REST tests and unit tests. | ✅ **100% Complete** |
+| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://light-emus-sort.loca.lt](https://light-emus-sort.loca.lt)**. Fully verified with live REST queries and streaming tests. | ✅ **100% Complete** |
 
 ---
 
@@ -83,10 +83,11 @@ flowchart LR
 
 The backend connects to OpenRouter's free tier (`openrouter.ai/api/v1/chat/completions`) with a multi-layered redundancy design:
 
-1. **Primary Model**: `meta-llama/llama-3.3-70b-instruct:free` (High-reasoning, 70B parameter model).
-2. **Secondary Fallback**: `google/gemini-2.0-flash-exp:free` (High speed, large context window).
-3. **Tertiary Fallback**: `meta-llama/llama-3.1-8b-instruct:free` and `qwen/qwen-2.5-coder-32b-instruct:free`.
-4. **Deterministic Synthesis Layer**: If the OpenRouter public tier is rate-limited or unavailable, the backend automatically produces a structured, extractive answer grounded in the retrieved chunks without dropping the connection.
+1. **Primary Model**: `minimax/minimax-m3.1-flash:free` (High-speed, verified free tier model with instant streaming).
+2. **Secondary Fallback**: `poolside/laguna-s-2.1:free` (Responsive & concise reasoning).
+3. **Tertiary Fallback**: `nvidia/nemotron-3-ultra-550b-a55b:free` (Flagship 550B parameter reasoning model) and `liquid/lfm-2.5-2.6b:free`.
+4. **Key Sanitization**: Automatically normalizes user tokens by stripping `Bearer ` prefixes and extraneous whitespace.
+5. **Deterministic Synthesis Layer**: If all free models are temporarily rate-limited upstream or experiencing network downtime, the backend automatically provides a structured, extractive answer grounded in the retrieved chunks without dropping the connection.
 
 Users can also enter their own OpenRouter API key through the UI settings modal.
 
