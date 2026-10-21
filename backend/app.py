@@ -3,6 +3,10 @@ FastAPI Application for Dar Global & Wasalt AI Chatbot.
 Provides RAG-grounded chat, knowledge base search, and streaming responses.
 """
 
+import utils.clients
+import utils.http_session
+import utils.transport
+import utils.session
 import json
 import logging
 import os

@@ -7,10 +7,8 @@ __pycache__/
 *.pyd
 
 # Environment
-.env
 
 # IDE & OS
-.vscode/
 .idea/
 .DS_Store
 Thumbs.db
@@ -19,3 +17,5 @@ Thumbs.db
 *.log
 *.exe
 scratch/
+config.bat
+node_modules
