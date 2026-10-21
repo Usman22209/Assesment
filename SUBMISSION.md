@@ -2,8 +2,8 @@
 
 **Candidate / Developer**: Usman Shafiq ([usman.shafiq.dev@gmail.com](mailto:usman.shafiq.dev@gmail.com))  
 **Position / Role**: AI / Full-Stack Engineer  
-**Live Public Application**: [https://light-emus-sort.loca.lt](https://light-emus-sort.loca.lt)  
-**Local Test Endpoint**: [http://localhost:8000](http://localhost:8000)  
+**Live Public Application**: [https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)  
+**Local Test Endpoint**: [http://localhost:8000](http://localhost:8000) (or `http://localhost:3005`)  
 **Repository Working Directory**: `c:\Users\Usman\Documents\GitHub\Assesment`  
 
 ---
@@ -26,7 +26,7 @@ The application satisfies **all 5 technical requirements** with enterprise quali
 | **2** | **Build an AI chatbot grounded in the collected content** | BM25 + keyword hybrid retrieval engine (`backend/rag_engine.py`) coupled with structured prompt engineering (`backend/app.py`). Strict citation badges and source URLs on every answer. | ✅ **100% Complete** |
 | **3** | **Use a suitable free model through OpenRouter** | Integrated OpenRouter API (`backend/llm_client.py`) with automatic key sanitization (stripping `Bearer ` prefixes), multi-model streaming fallback across verified free models (`minimax/minimax-m3.1-flash:free`, `poolside/laguna-s-2.1:free`, `nvidia/nemotron-3-ultra-550b-a55b:free`, `liquid/lfm-2.5-2.6b:free`), and deterministic verified grounding fallback. | ✅ **100% Complete** |
 | **4** | **Containerise the application with Docker** | Multi-stage, non-root, production `Dockerfile` with built-in health checks and dynamic `$PORT` binding + `docker-compose.yml` for 1-command startup. | ✅ **100% Complete** |
-| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://light-emus-sort.loca.lt](https://light-emus-sort.loca.lt)**. Fully verified with live REST queries and streaming tests. | ✅ **100% Complete** |
+| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)** (backed by Oracle Cloud with 24/7 uptime and zero exposed server IPs). Fully verified with live REST queries and streaming tests. | ✅ **100% Complete** |
 
 ---
 

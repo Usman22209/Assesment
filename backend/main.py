@@ -8,13 +8,16 @@ import sys
 from pathlib import Path
 import uvicorn
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Ensure repository root is on sys.path
 ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 3005))
     host = os.getenv("HOST", "0.0.0.0")
     print(f"Starting Dar Global & Wasalt AI Assistant on {host}:{port}")
     uvicorn.run("backend.app:app", host=host, port=port, reload=False)
