@@ -1,14 +1,12 @@
-# Technical Assessment Submission: Dar Global & Wasalt AI Chatbot
+﻿# Technical Assessment Submission: Dar Global & Wasalt AI Chatbot
 
-**Candidate / Developer**: Usman Shafiq ([usman.shafiq.dev@gmail.com](mailto:usman.shafiq.dev@gmail.com))  
+**Candidate / Developer**: Talha Sadiq  
 **Position / Role**: AI / Full-Stack Engineer  
 **Live Public Application**: [https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)  
 **Local Test Endpoint**: [http://localhost:8000](http://localhost:8000) (or `http://localhost:3005`)  
-**Repository Working Directory**: `c:\Users\Usman\Documents\GitHub\Assesment`  
-
 ---
 
-## 🌟 Executive Summary
+## ðŸŒŸ Executive Summary
 
 This project delivers a production-grade, retrieval-augmented generation (RAG) AI assistant built to ground queries on publicly available domain intelligence from:
 1. **[Dar Global](https://darglobal.co.uk/)** (LSE: DAR): The London-listed international luxury developer behind landmark co-branded residences with Pagani, Automobili Lamborghini, Missoni, Trump Organization, and Fendi Casa across the UAE, Qatar, Oman, London, Spain, Maldives, and Saudi Arabia.
@@ -18,19 +16,19 @@ The application satisfies **all 5 technical requirements** with enterprise quali
 
 ---
 
-## 📌 Compliance Matrix Against Assessment Requirements
+## ðŸ“Œ Compliance Matrix Against Assessment Requirements
 
 | # | Requirement | Implementation & Proof of Compliance | Status |
 |---|---|---|---|
-| **1** | **Collect relevant publicly available information, respecting access restrictions** | Built automated scraper (`scripts/collect_data.py`) and indexed 16 documents / 44 chunks (116K+ chars) in `data/knowledge_base.json`. Verified and strictly adhered to `robots.txt` guidelines for both domains. | ✅ **100% Complete** |
-| **2** | **Build an AI chatbot grounded in the collected content** | BM25 + keyword hybrid retrieval engine (`backend/rag_engine.py`) coupled with structured prompt engineering (`backend/app.py`). Strict citation badges and source URLs on every answer. | ✅ **100% Complete** |
-| **3** | **Use a suitable free model through OpenRouter** | Integrated OpenRouter API (`backend/llm_client.py`) with automatic key sanitization (stripping `Bearer ` prefixes), multi-model streaming fallback across verified free models (`minimax/minimax-m3.1-flash:free`, `poolside/laguna-s-2.1:free`, `nvidia/nemotron-3-ultra-550b-a55b:free`, `liquid/lfm-2.5-2.6b:free`), and deterministic verified grounding fallback. | ✅ **100% Complete** |
-| **4** | **Containerise the application with Docker** | Multi-stage, non-root, production `Dockerfile` with built-in health checks and dynamic `$PORT` binding + `docker-compose.yml` for 1-command startup. | ✅ **100% Complete** |
-| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)** (backed by Oracle Cloud with 24/7 uptime and zero exposed server IPs). Fully verified with live REST queries and streaming tests. | ✅ **100% Complete** |
+| **1** | **Collect relevant publicly available information, respecting access restrictions** | Built automated scraper (`scripts/collect_data.py`) and indexed 16 documents / 44 chunks (116K+ chars) in `data/knowledge_base.json`. Verified and strictly adhered to `robots.txt` guidelines for both domains. | âœ… **100% Complete** |
+| **2** | **Build an AI chatbot grounded in the collected content** | BM25 + keyword hybrid retrieval engine (`backend/rag_engine.py`) coupled with structured prompt engineering (`backend/app.py`). Strict citation badges and source URLs on every answer. | âœ… **100% Complete** |
+| **3** | **Use a suitable free model through OpenRouter** | Integrated OpenRouter API (`backend/llm_client.py`) with automatic key sanitization (stripping `Bearer ` prefixes), multi-model streaming fallback across verified free models (`minimax/minimax-m3.1-flash:free`, `poolside/laguna-s-2.1:free`, `nvidia/nemotron-3-ultra-550b-a55b:free`, `liquid/lfm-2.5-2.6b:free`), and deterministic verified grounding fallback. | âœ… **100% Complete** |
+| **4** | **Containerise the application with Docker** | Multi-stage, non-root, production `Dockerfile` with built-in health checks and dynamic `$PORT` binding + `docker-compose.yml` for 1-command startup. | âœ… **100% Complete** |
+| **5** | **Deploy the application and provide a live URL for direct testing** | Deployed live at **[https://listed-supplemental-detail-controlling.trycloudflare.com](https://listed-supplemental-detail-controlling.trycloudflare.com)** (backed by Oracle Cloud with 24/7 uptime and zero exposed server IPs). Fully verified with live REST queries and streaming tests. | âœ… **100% Complete** |
 
 ---
 
-## 🛡️ Requirement 1: Access Restrictions & robots.txt Compliance
+## ðŸ›¡ï¸ Requirement 1: Access Restrictions & robots.txt Compliance
 
 Both source platforms have clear public access policies which were respected during data collection:
 
@@ -58,7 +56,7 @@ Both source platforms have clear public access policies which were respected dur
 
 ---
 
-## 🧠 Requirement 2: Grounded RAG Architecture
+## ðŸ§  Requirement 2: Grounded RAG Architecture
 
 ```mermaid
 flowchart LR
@@ -79,7 +77,7 @@ flowchart LR
 
 ---
 
-## ⚡ Requirement 3: OpenRouter Free Models & Fallback
+## âš¡ Requirement 3: OpenRouter Free Models & Fallback
 
 The backend connects to OpenRouter's free tier (`openrouter.ai/api/v1/chat/completions`) with a multi-layered redundancy design:
 
@@ -93,7 +91,7 @@ Users can also enter their own OpenRouter API key through the UI settings modal.
 
 ---
 
-## 🐳 Requirement 4: Containerization with Docker
+## ðŸ³ Requirement 4: Containerization with Docker
 
 The application is fully containerized and runs with zero external dependencies (no third-party database or external vector store setup required).
 
@@ -106,7 +104,6 @@ The application is fully containerized and runs with zero external dependencies 
 ### Quick Start with Docker:
 ```bash
 # Clone the repository
-git clone <repo-url>
 cd Assesment
 
 # Run with docker-compose
@@ -120,10 +117,10 @@ Access at: `http://localhost:8000`
 
 ---
 
-## 🚀 Requirement 5: Live URL & Interactive Testing Guide
+## ðŸš€ Requirement 5: Live URL & Interactive Testing Guide
 
 ### Live URL:
-🔗 **[https://answered-lewis-calibration-experiments.trycloudflare.com](https://answered-lewis-calibration-experiments.trycloudflare.com)**
+ðŸ”— **[https://answered-lewis-calibration-experiments.trycloudflare.com](https://answered-lewis-calibration-experiments.trycloudflare.com)**
 
 ### Recommended Queries to Test in the Live UI:
 
@@ -149,7 +146,7 @@ Access at: `http://localhost:8000`
 
 ---
 
-## 📊 Verification Test Suite Execution
+## ðŸ“Š Verification Test Suite Execution
 
 The repository includes comprehensive automated tests that can be executed at any time:
 
@@ -167,36 +164,37 @@ python tests/test_api.py
 
 ---
 
-## 📂 Repository Layout
+## ðŸ“‚ Repository Layout
 
 ```text
 Assesment/
-├── backend/
-│   ├── __init__.py         # Python package marker
-│   ├── app.py              # FastAPI server, SSE streaming, chat endpoints
-│   ├── llm_client.py       # OpenRouter client with free models & fallback
-│   ├── main.py             # Uvicorn launcher with dynamic $PORT support
-│   └── rag_engine.py       # BM25 & semantic hybrid retrieval engine
-├── data/
-│   └── knowledge_base.json # 16 curated documents, 44 indexed chunks
-├── frontend/
-│   ├── index.html          # Responsive luxury real estate chat UI
-│   ├── style.css           # Custom CSS (Onyx, Gold, Emerald palette)
-│   └── app.js              # Streaming client, model selector, citation cards
-├── scripts/
-│   └── collect_data.py     # Robots.txt-compliant data collection pipeline
-├── tests/
-│   ├── test_rag.py         # Unit tests for retrieval accuracy
-│   └── test_api.py         # Integration tests for FastAPI endpoints
-├── Dockerfile              # Multi-stage production container
-├── docker-compose.yml      # 1-command Docker orchestration
-├── requirements.txt        # Python dependencies
-├── .dockerignore           # Container build optimization
-├── .gitignore              # Repository hygiene
-├── README.md               # Detailed developer documentation
-└── SUBMISSION.md           # Assessment submission report (this document)
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ __init__.py         # Python package marker
+â”‚   â”œâ”€â”€ app.py              # FastAPI server, SSE streaming, chat endpoints
+â”‚   â”œâ”€â”€ llm_client.py       # OpenRouter client with free models & fallback
+â”‚   â”œâ”€â”€ main.py             # Uvicorn launcher with dynamic $PORT support
+â”‚   â””â”€â”€ rag_engine.py       # BM25 & semantic hybrid retrieval engine
+â”œâ”€â”€ data/
+â”‚   â””â”€â”€ knowledge_base.json # 16 curated documents, 44 indexed chunks
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ index.html          # Responsive luxury real estate chat UI
+â”‚   â”œâ”€â”€ style.css           # Custom CSS (Onyx, Gold, Emerald palette)
+â”‚   â””â”€â”€ app.js              # Streaming client, model selector, citation cards
+â”œâ”€â”€ scripts/
+â”‚   â””â”€â”€ collect_data.py     # Robots.txt-compliant data collection pipeline
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ test_rag.py         # Unit tests for retrieval accuracy
+â”‚   â””â”€â”€ test_api.py         # Integration tests for FastAPI endpoints
+â”œâ”€â”€ Dockerfile              # Multi-stage production container
+â”œâ”€â”€ docker-compose.yml      # 1-command Docker orchestration
+â”œâ”€â”€ requirements.txt        # Python dependencies
+â”œâ”€â”€ .dockerignore           # Container build optimization
+â”œâ”€â”€ .gitignore              # Repository hygiene
+â”œâ”€â”€ README.md               # Detailed developer documentation
+â””â”€â”€ SUBMISSION.md           # Assessment submission report (this document)
 ```
 
 ---
 
-*Submitted by Usman Shafiq for the Technical Assessment.*
+*Submitted by Talha Sadiq for the Technical Assessment.*
+
